@@ -37,6 +37,8 @@ ASMagicProjectile::ASMagicProjectile()
 	MovementComp->bRotationFollowsVelocity = true;
 	MovementComp->bInitialVelocityInLocalSpace = true;
 
+	TimeProjectileAlive = 2.0f;
+
 }
 
 void ASMagicProjectile::PostInitializeComponents()
@@ -46,17 +48,28 @@ void ASMagicProjectile::PostInitializeComponents()
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASMagicProjectile::OnActorOverlap);
 }
 
-//void ASMagicProjectile::OnCompHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-//{
-//	URadialForceComponent* ActionComp = Cast<URadialForceComponent>(OtherActor->GetComponentByClass(URadialForceComponent::StaticClass()));
-//
-//	if (ActionComp != nullptr)
-//	{
-//		ActionComp->FireImpulse();
-//	}
-//	//RadialForceComp->FireImpulse();
-//}
+void ASMagicProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	OnActorResponse(HitComponent, OtherActor, OtherComp, Hit);
+}
+
 void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	OnActorResponse(OverlappedComponent, OtherActor, OtherComp, SweepResult);
+}
+
+// Called when the game starts or when spawned
+void ASMagicProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	//FTimerDelegate Delegate;
+	//Delegate.BindUFunction(this, "KillProjectile", this);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_KillProjectile, this, &ASMagicProjectile::Explode, TimeProjectileAlive);
+}
+
+void ASMagicProjectile::OnActorResponse(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, const FHitResult& Hit)
 {
 	if (OtherActor && OtherActor != GetInstigator())
 	{
@@ -66,12 +79,14 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 		{
 			MovementComp->Velocity = -MovementComp->Velocity;
 			SetInstigator(Cast<APawn>(OtherActor));
-		
+
 			return;
 		}
 
-		if (USGamePlayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
+		if (USGamePlayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, Hit))
 		{
+			GetWorldTimerManager().ClearTimer(TimerHandle_KillProjectile);
+
 			Explode();
 
 			if (ActionComp && HasAuthority())
@@ -92,17 +107,17 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 	}
 }
 
-// Called when the game starts or when spawned
-void ASMagicProjectile::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
 // Called every frame
 void ASMagicProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (SetTarget)
+	{
+		FVector Direction = Target - GetActorLocation();
+		Direction.Normalize();
+
+		MovementComp->AddForce(Direction * 10000);
+	}
 }
 

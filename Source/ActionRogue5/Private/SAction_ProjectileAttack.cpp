@@ -5,6 +5,7 @@
 
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "SMagicProjectile.h"
 
 USAction_ProjectileAttack::USAction_ProjectileAttack()
 {
@@ -73,9 +74,20 @@ void USAction_ProjectileAttack::AttackDelay_Elapsed(ACharacter* InstigatorCharac
 		}
 
 		FRotator ProjRotation = FRotationMatrix::MakeFromX(TraceEnd - HandLocation).Rotator();
+		ProjRotation = InstigatorCharacter->GetActorRotation(); // .Vector();
 
 		FTransform SpawnTM = FTransform(ProjRotation, HandLocation);
-		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+		AActor* ActorProjectile = GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+
+		if (ActorProjectile)
+		{
+			ASMagicProjectile* MagicProjectile = Cast<ASMagicProjectile>(ActorProjectile);
+			if (MagicProjectile)
+			{
+				MagicProjectile->Target = TraceEnd;
+				MagicProjectile->SetTarget = true;
+			}
+		}
 	}
 
 	StopAction(InstigatorCharacter);
