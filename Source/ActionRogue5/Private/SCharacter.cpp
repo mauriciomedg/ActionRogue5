@@ -7,7 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "SInteractionComponent.h"
-//#include "SAttributeComponent.h"
+#include "SAttributeComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "SActionComponent.h"
 #include "SActionEffect.h"
@@ -29,7 +29,7 @@ ASCharacter::ASCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
 	
-	//AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
+	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 	
 	ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
 	
@@ -41,7 +41,7 @@ void ASCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	//AttributeComp->OnHealthChange.AddDynamic(this, &ASCharacter::OnHealthChanged);
+	AttributeComp->OnHealthChange.AddDynamic(this, &ASCharacter::OnHealthChanged);
 }
 
 // Called when the game starts or when spawned
@@ -142,40 +142,40 @@ void ASCharacter::PrimaryAttackTeleport()
 	ActionComp->StartActionByName(this, "Dash");
 }
 
-//void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwingComp, float NewHealth, float Delta)
-//{
-	//if (Delta < 0.0f)
-	//{
-	//	GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
-	//}
-	//
-	//if (NewHealth < 50)
-	//{
-	//	if (ActionComp->ActiveGameplayTags.HasTagExact(GrantBlackHoleAttackTag))
-	//	{
-	//		ActionComp->ActiveGameplayTags.RemoveTag(GrantBlackHoleAttackTag);
-	//	}
-	//}
-	//else
-	//{
-	//	if (!ActionComp->ActiveGameplayTags.HasTagExact(GrantBlackHoleAttackTag))
-	//	{
-	//		ActionComp->ActiveGameplayTags.AddTag(GrantBlackHoleAttackTag);
-	//	}
-	//}
-	//
-	//if (NewHealth <= 0.0f && Delta < 0.0f)
-	//{
-	//	APlayerController* PlayerCtr = Cast<APlayerController>(GetController());
-	//
-	//	DisableInput(PlayerCtr);
-	//
-	//	SetLifeSpan(5.0f);
-	//}
-//}
+void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwingComp, float NewHealth, float Delta)
+{
+	if (Delta < 0.0f)
+	{
+		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+	}
+	
+	if (NewHealth < 50)
+	{
+		if (ActionComp->ActiveGameplayTags.HasTagExact(GrantBlackHoleAttackTag))
+		{
+			ActionComp->ActiveGameplayTags.RemoveTag(GrantBlackHoleAttackTag);
+		}
+	}
+	else
+	{
+		if (!ActionComp->ActiveGameplayTags.HasTagExact(GrantBlackHoleAttackTag))
+		{
+			ActionComp->ActiveGameplayTags.AddTag(GrantBlackHoleAttackTag);
+		}
+	}
+	
+	if (NewHealth <= 0.0f && Delta < 0.0f)
+	{
+		APlayerController* PlayerCtr = Cast<APlayerController>(GetController());
+	
+		DisableInput(PlayerCtr);
+	
+		SetLifeSpan(5.0f);
+	}
+}
 
 void ASCharacter::HealSelf(float Amount /* - 100 */)
 {
-	//AttributeComp->ApplyHealthChange(this, Amount);
+	AttributeComp->ApplyHealthChange(this, Amount);
 }
 

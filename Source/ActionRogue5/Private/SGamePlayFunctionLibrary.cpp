@@ -3,16 +3,16 @@
 
 #include "SGamePlayFunctionLibrary.h"
 
-//#include "SAttributeComponent.h"
+#include "SAttributeComponent.h"
 
 bool USGamePlayFunctionLibrary::ApplyDamage(AActor* DamageCauser, AActor* TargetActor, float DamageAmount)
 {
-	//USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(TargetActor);
-	//
-	//if (AttributeComp)
-	//{
-	//	return AttributeComp->ApplyHealthChange(DamageCauser, -DamageAmount);
-	//}
+	USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(TargetActor);
+	
+	if (AttributeComp)
+	{
+		return AttributeComp->ApplyHealthChange(DamageCauser, -DamageAmount);
+	}
 
 	return false;
 }

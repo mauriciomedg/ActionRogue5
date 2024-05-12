@@ -26,8 +26,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Effect")
 	FName HandSocketName;
 	
-	//UFUNCTION()
-	//void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwingComp, float NewHealth, float Delta);
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwingComp, float NewHealth, float Delta);
 
 	virtual void PostInitializeComponents() override;
 	
@@ -46,14 +46,14 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr <USInteractionComponent> InteractionComp;
 	
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	//USAttributeComponent* AttributeComp;
-	//
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USAttributeComponent* AttributeComp;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USActionComponent* ActionComp;
-	//
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tag")
-	//FGameplayTag GrantBlackHoleAttackTag;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tag")
+	FGameplayTag GrantBlackHoleAttackTag;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -62,10 +62,6 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 void ASMagicProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	//FTimerDelegate Delegate;
-	//Delegate.BindUFunction(this, "KillProjectile", this);
-
 	GetWorldTimerManager().SetTimer(TimerHandle_KillProjectile, this, &ASMagicProjectile::Explode, TimeProjectileAlive);
 }
 
@@ -91,7 +87,7 @@ void ASMagicProjectile::OnActorResponse(UPrimitiveComponent* HitComponent, AActo
 
 			if (ActionComp && HasAuthority())
 			{
-				ActionComp->AddAction(GetInstigator(), BurningActionClass);
+				//ActionComp->AddAction(GetInstigator(), BurningActionClass);
 			}
 		}
 
