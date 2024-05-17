@@ -31,15 +31,15 @@ void USBTService_CheckAttackRange::TickNode(UBehaviorTreeComponent & OwnerComp, 
 					float DistanceTo = FVector::Distance(AIPawn->GetActorLocation(), TargetActor->GetActorLocation());
 
 					bool bHasLOS = false;
-					bool bWithinRange = DistanceTo < 1000.f;
+					bool bOutOfRange = DistanceTo > 1000.f;
 
-					if (bWithinRange)
+					if (bOutOfRange)
 					{
 						bHasLOS = MyController->LineOfSightTo(TargetActor);
 					}
 
 					//BlackBoardComp->SetValueAsBool("WithinAttackRange", bWithinRange);
-					BlackBoardComp->SetValueAsBool(AttackRangeKey.SelectedKeyName, bWithinRange && bHasLOS);
+					BlackBoardComp->SetValueAsBool(AttackRangeKey.SelectedKeyName, bOutOfRange && bHasLOS);
 				}
 			}
 		}

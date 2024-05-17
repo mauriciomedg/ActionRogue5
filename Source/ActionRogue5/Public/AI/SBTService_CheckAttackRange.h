@@ -6,6 +6,7 @@
 #include "BehaviorTree/BTService.h"
 #include "SBTService_CheckAttackRange.generated.h"
 
+// WE NEED TO INCLUDE THE DEPENDENCY "GameplayTasks" 
 /**
  * 
  */

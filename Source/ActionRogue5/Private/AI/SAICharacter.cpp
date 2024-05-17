@@ -103,12 +103,12 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 
 void ASAICharacter::SetTargetActor(AActor* NewTarget)
 {
-	//AAIController* AIC = Cast<AAIController>(GetController());
-	//
-	//if (AIC)
-	//{
-	//	AIC->GetBlackboardComponent()->SetValueAsObject("TargetActor", NewTarget);
-	//}
+	AAIController* AIC = Cast<AAIController>(GetController());
+	
+	if (AIC)
+	{
+		AIC->GetBlackboardComponent()->SetValueAsObject("TargetActor", NewTarget);
+	}
 }
 
 void ASAICharacter::OnPawnSeen(APawn* Pawn)
