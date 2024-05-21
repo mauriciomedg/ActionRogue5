@@ -2,7 +2,7 @@
 
 
 #include "SGameModeBase.h"
-//#include "AI/SAICharacter.h"
+#include "AI/SAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "SAttributeComponent.h"
 #include "EngineUtils.h" // for TActorIterator<>
@@ -52,17 +52,17 @@ void ASGameModeBase::SpawnBotTimerElapsed()
 
 	// This is a better version of (GetAllActorsOfClassBy) 
 	int32 NbOfAliveBots = 0;
-	//for (TActorIterator<ASAICharacter> It(GetWorld()); It; ++It)
-	//{
-	//	ASAICharacter* Bot = *It;
-	//
-	//	USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(Bot);
-	//
-	//	if (ensure(AttributeComp) && AttributeComp->IsAlive())
-	//	{
-	//		NbOfAliveBots++;
-	//	}
-	//}
+	for (TActorIterator<ASAICharacter> It(GetWorld()); It; ++It)
+	{
+		ASAICharacter* Bot = *It;
+	
+		USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(Bot);
+	
+		if (ensure(AttributeComp) && AttributeComp->IsAlive())
+		{
+			NbOfAliveBots++;
+		}
+	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Found %i alive bots."), NbOfAliveBots);
 
@@ -79,14 +79,14 @@ void ASGameModeBase::SpawnBotTimerElapsed()
 		return;
 	}
 
-	//if (ensure(SpawnBotQuery))
-	//{
-	//	// Can run in multiple frames
-	//	QueryInst->GetOnQueryFinishedEvent().AddDynamic(this, &ASGameModeBase::OnQueryCompleted);
-	//}
+	if (ensure(SpawnBotQuery))
+	{
+		// Can run in multiple frames
+		QueryInst->GetOnQueryFinishedEvent().AddDynamic(this, &ASGameModeBase::OnQuerySpawnBotCompleted);
+	}
 }
 
-void ASGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
+void ASGameModeBase::OnQuerySpawnBotCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
 {
 	if (QueryStatus != EEnvQueryStatus::Success)
 	{
