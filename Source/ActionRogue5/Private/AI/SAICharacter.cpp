@@ -59,7 +59,7 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 		return;
 	}
 	
-	if (InstigatorActor) // we dont check if there is the player or the bot that takes damages
+	if (InstigatorActor != this) // we dont check if there is the player or the bot that takes damages
 	{
 		SetTargetActor(InstigatorActor);
 	}
