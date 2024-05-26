@@ -2,7 +2,7 @@
 
 
 #include "SAttributeComponent.h"
-//#include "SGameModeBase.h"
+#include "SGameModeBase.h"
 #include "Net/UnrealNetwork.h"
 
 // su. its to make the own category of console variables
@@ -79,12 +79,12 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 		if (ActualDelta < 0.0f && Health == 0.0f)
 		{
 			// Auth Authority, GameMode only exist in the sever.
-			//ASGameModeBase* GM = GetWorld()->GetAuthGameMode<ASGameModeBase>();
+			ASGameModeBase* GM = GetWorld()->GetAuthGameMode<ASGameModeBase>();
 
-			//if (GM)
-			//{
-			//	GM->OnActorKilled(GetOwner(), InstigatorActor);
-			//}
+			if (GM)
+			{
+				GM->OnActorKilled(GetOwner(), InstigatorActor);
+			}
 		}
 
 	}

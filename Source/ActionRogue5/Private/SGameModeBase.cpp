@@ -125,17 +125,17 @@ void ASGameModeBase::OnQueryHealthPotionCompleted(UEnvQueryInstanceBlueprintWrap
 
 void ASGameModeBase::KillAll()
 {
-	//for (TActorIterator<ASAICharacter> It(GetWorld()); It; ++It)
-	//{
-	//	ASAICharacter* Bot = *It;
-	//
-	//	USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(Bot);
-	//
-	//	if (ensure(AttributeComp) && AttributeComp->IsAlive())
-	//	{
-	//		AttributeComp->Kill(this); //@fixme: pass in player? for kill credit
-	//	}
-	//}
+	for (TActorIterator<ASAICharacter> It(GetWorld()); It; ++It)
+	{
+		ASAICharacter* Bot = *It;
+	
+		USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(Bot);
+	
+		if (ensure(AttributeComp) && AttributeComp->IsAlive())
+		{
+			AttributeComp->Kill(this); //@fixme: pass in player? for kill credit
+		}
+	}
 }
 
 void ASGameModeBase::RespawnPlayerElapse(AController* Controller)
@@ -168,20 +168,20 @@ void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 	}
 	else
 	{
-		//ASAICharacter* Bot = Cast<ASAICharacter>(VictimActor);
-		//
-		//if (Bot)
-		//{
-		//	Player = Cast<ASCharacter>(Killer);
-		//	if (Player)
-		//	{
-		//		ASPlayerState* PayerState = ASPlayerState::GetSPlayerState(Player);// Cast<ASPlayerState>(Player->GetPlayerState()); // GetSPlayerState();
-		//		if (PayerState)
-		//		{
-		//			PayerState->GrantCredits(BotKilledCredit);
-		//		}
-		//	}
-		//}
+		ASAICharacter* Bot = Cast<ASAICharacter>(VictimActor);
+		
+		if (Bot)
+		{
+			Player = Cast<ASCharacter>(Killer);
+			if (Player)
+			{
+				ASPlayerState* PayerState = ASPlayerState::GetSPlayerState(Player);// Cast<ASPlayerState>(Player->GetPlayerState()); // GetSPlayerState();
+				if (PayerState)
+				{
+					PayerState->GrantCredits(BotKilledCredit);
+				}
+			}
+		}
 	}
 }
 
