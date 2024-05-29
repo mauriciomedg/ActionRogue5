@@ -25,7 +25,11 @@ ASAICharacter::ASAICharacter()
 
 	ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
 
+	// For applying directional damage, This is temporal, we need to create a custom collision channel
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+	GetMesh()->SetGenerateOverlapEvents(true);
+	//
+
 
 	TimeToHitParamName = "TimeToHit";
 }

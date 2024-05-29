@@ -29,7 +29,7 @@ bool USGamePlayFunctionLibrary::ApplyDirectionalDamage(AActor* DamageCauser, AAc
 			FVector Direction = HitResult.TraceEnd - HitResult.TraceStart;
 			Direction.Normalize();
 
-			HitComp->AddImpulseAtLocation(Direction * 300000.f, HitResult.ImpactPoint, HitResult.BoneName);
+			HitComp->AddImpulseAtLocation(Direction * 30000.f, HitResult.ImpactPoint, HitResult.BoneName);
 		}
 		return true;
 	}
