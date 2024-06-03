@@ -120,7 +120,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttackMagicProjectile);
-	PlayerInputComponent->BindAction("PrimaryAttackBlackHole", IE_Pressed, this, &ASCharacter::PrimaryAttackBlackHole);
+	PlayerInputComponent->BindAction("SecondaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttackBlackHole);
 	PlayerInputComponent->BindAction("PrimaryAttackTeleport", IE_Pressed, this, &ASCharacter::PrimaryAttackTeleport);
 
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASCharacter::SprintStart);
@@ -129,7 +129,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ASCharacter::PrimaryAttackMagicProjectile()
 {
-	ActionComp->StartActionByName(this, "PrimaryAttack");
+	ActionComp->StartActionByName(this, "MagicProjectile");
 }
 
 void ASCharacter::PrimaryAttackBlackHole()

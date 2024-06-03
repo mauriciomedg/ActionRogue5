@@ -74,7 +74,7 @@ void USAction_ProjectileAttack::AttackDelay_Elapsed(ACharacter* InstigatorCharac
 		}
 
 		FRotator ProjRotation = FRotationMatrix::MakeFromX(TraceEnd - HandLocation).Rotator();
-		ProjRotation = InstigatorCharacter->GetActorRotation(); // .Vector();
+		//ProjRotation = InstigatorCharacter->GetActorRotation(); // .Vector();
 
 		FTransform SpawnTM = FTransform(ProjRotation, HandLocation);
 		AActor* ActorProjectile = GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
@@ -85,7 +85,7 @@ void USAction_ProjectileAttack::AttackDelay_Elapsed(ACharacter* InstigatorCharac
 			if (MagicProjectile)
 			{
 				MagicProjectile->Target = TraceEnd;
-				MagicProjectile->SetTarget = true;
+				MagicProjectile->SetTarget = false;
 			}
 		}
 	}
