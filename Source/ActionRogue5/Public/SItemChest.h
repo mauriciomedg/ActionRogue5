@@ -28,7 +28,7 @@ public:
 
 protected:
 
-	//
+	//OnRep_LidOpened is that function binded to a bLidOpened
 	UPROPERTY(ReplicatedUsing = "OnRep_LidOpened", BlueprintReadOnly, SaveGame) // ReplicatedUsing == RepNotif Knowing in doc and blueprint
 	bool bLidOpened;
 

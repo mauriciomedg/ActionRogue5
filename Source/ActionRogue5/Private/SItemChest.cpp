@@ -16,7 +16,7 @@ ASItemChest::ASItemChest()
 	Credit = 1.0f;
 
 	// Tells Unreal to consider this actor to update that variables in the client
-	SetReplicates(true);
+	bReplicates = true;
 }
 
 void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
