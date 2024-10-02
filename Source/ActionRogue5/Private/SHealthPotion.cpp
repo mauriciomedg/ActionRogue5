@@ -22,7 +22,9 @@ ASHealthPotion::ASHealthPotion()
 	//BottleMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	// and add a sphere to handle the overlap.
 
-	SetReplicates(true);
+	//When the actor is spawn in the server, for instance in the game mode in this cases,
+	//set it to replicate tells unreal to spaw the copy of this for the clients.
+	bReplicates = true;
 }
 
 void ASHealthPotion::EnableHealthPotion()

@@ -38,7 +38,9 @@ ASProjectileBase::ASProjectileBase()
 	MovementComp->bRotationFollowsVelocity = true;
 	//MovementComp->bInitialVelocityInLocalSpace = true;
 
-	SetReplicates(true);
+	//When the actor is spawn in the server, for instance in the game mode in this cases,
+	//set it to replicate tells unreal to spaw the copy of this for the clients.
+	bReplicates = true;
 }
 
 void ASProjectileBase::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
