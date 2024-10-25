@@ -29,6 +29,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "UI")
 	FVector WorldOffset;
 
-	UPROPERTY(BlueprintReadOnly, Category = "UI", meta = (ExposeOnSpawn = true))
+	//meta = (ExposeOnSpawn = true) information in the blueprint, that allows to show it as a pin in the widget.
+	UPROPERTY(BlueprintReadWrite, Category = "UI", meta = (ExposeOnSpawn = true))
 	AActor* AttachedActor;
 };
