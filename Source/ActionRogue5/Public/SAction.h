@@ -53,7 +53,7 @@ protected:
 	FGameplayTagContainer BlockedTags;
 
 	UPROPERTY(ReplicatedUsing = "OnRep_RepData")
-	FActionRepData RepData;
+	FActionRepData RepData; // To put all of that in a struct guarantees, it arrive at the same time
 	//bool bIsRunning = false;
 
 	UFUNCTION()
