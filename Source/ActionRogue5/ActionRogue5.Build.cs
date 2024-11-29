@@ -8,7 +8,24 @@ public class ActionRogue5 : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "AIModule", "GameplayTasks", "UMG", "GameplayTags" });
+		PublicDependencyModuleNames.AddRange(
+			new string[] 
+			{ 
+				"Core", 
+				"CoreUObject", 
+				"Engine", 
+				"InputCore", 
+				"EnhancedInput", 
+				"AIModule", 
+				"GameplayTasks", 
+				"UMG",
+                "Chaos",
+                "GameplayTags",
+                "ChaosVehiclesCore",
+                "ChaosModularVehicle",
+                "GeometryCollectionEngine"
+            }
+		);
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
