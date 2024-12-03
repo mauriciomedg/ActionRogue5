@@ -2,6 +2,7 @@
 
 
 #include "ModularCar/SFSuspensionModule.h"
+#include "SimModule/SimModuleTree.h"
 #include "ModularCar/SFWheelSimModule.h"
 #include "Chaos/PBDSuspensionConstraints.h"
 #include "PhysicsProxy/SuspensionConstraintProxy.h"

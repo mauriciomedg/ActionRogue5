@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SimModule/SimModulesInclude.h"
+#include "SimModule/SuspensionModule.h"
 #include "VehicleUtility.h"
 
 struct Chaos::FAllInputs;

@@ -3,9 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SimModule/SimModulesInclude.h"
+#include "SimModule/WheelModule.h"
 #include "VehicleUtility.h"
 
+class Chaos::FSimModuleTree;
 /**
  * 
  */
