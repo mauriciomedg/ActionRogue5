@@ -21,7 +21,6 @@ public class ActionRogue5 : ModuleRules
 				"UMG",
                 "Chaos",
                 "GameplayTags",
-                "ChaosVehiclesCore",
                 "ChaosModularVehicle",
                 "GeometryCollectionEngine"
             }
