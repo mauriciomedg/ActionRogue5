@@ -21,6 +21,7 @@ public:
 
 	virtual float GetForceIntoSurface() const { return ForceIntoSurface; }
 	virtual void SetSurfaceFriction(float FrictionIn) { SurfaceFriction = FrictionIn; }
+	virtual void Animate(Chaos::FClusterUnionPhysicsProxy* Proxy);
 
 	~SFWheelSimModule();
 

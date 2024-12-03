@@ -45,7 +45,7 @@ void SFWheelSimModule::Simulate(float DeltaTime, const FAllInputs& Inputs, FSimM
 		FVector LocalWheelVelocity = (Setup().Axis == EWheelAxis::X) ? FVector(Vel.X, Vel.Y, Vel.Z) : FVector(Vel.Y, Vel.X, Vel.Z); // Potential Axis Swap
 		LocalWheelVelocity = Setup().ReverseDirection ? -LocalWheelVelocity : LocalWheelVelocity;
 
-		float GroundAngularVelocity = LocalWheelVelocity.X / Re;
+		float GroundAngularVelocity = LocalWheelVelocity.Y / Re;
 		float Delta = GroundAngularVelocity - AngularVelocity;
 		TorqueFromGroundInteraction = Delta * Setup().WheelInertia / DeltaTime; // torque from wheels moving over terrain
 
@@ -200,4 +200,19 @@ void SFWheelSimModule::Simulate(float DeltaTime, const FAllInputs& Inputs, FSimM
 	LoadTorque = TorqueFromGroundInteraction;
 
 	IntegrateAngularVelocity(DeltaTime, Setup().WheelInertia, Setup().MaxRotationVel);
+}
+
+void SFWheelSimModule::Animate(FClusterUnionPhysicsProxy* Proxy)
+{
+	if (Proxy)
+	{
+		if (FPBDRigidClusteredParticleHandle* ClusterChild = GetClusterParticle(Proxy))
+		{
+			float Direction = Setup().ReverseDirection ? -1.0f : 1.0f;
+			FQuat Rot = (Setup().Axis == Chaos::EWheelAxis::Y) ? FQuat(FVector(1, 0, 0), -GetAngularPosition() * Direction) : FQuat(FVector(0, 1, 0), GetAngularPosition() * Direction);
+			FQuat Steer = FQuat(FVector(0, 0, 1), FMath::DegreesToRadians(GetSteerAngleDegrees()));
+
+			ClusterChild->ChildToParent().SetRotation(Steer * Rot * GetInitialParticleTransform().GetRotation());
+		}
+	}
 }

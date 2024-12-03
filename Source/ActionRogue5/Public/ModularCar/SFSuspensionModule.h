@@ -16,8 +16,6 @@ class Chaos::FSuspensionConstraint;
  */
 class ACTIONROGUE5_API SFSuspensionModule : public Chaos::FSuspensionSimModule
 {
-	friend Chaos::FSuspensionSimModuleDatas;
-	friend Chaos::FSuspensionOutputData;
 
 public:
 	SFSuspensionModule(const Chaos::FSuspensionSettings& Settings);
