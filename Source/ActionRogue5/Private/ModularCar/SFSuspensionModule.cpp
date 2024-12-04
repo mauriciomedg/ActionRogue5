@@ -57,7 +57,7 @@ void SFSuspensionModule::SetSuspensionConstraint(FSuspensionConstraint* InConstr
 	Constraint = InConstraint;
 }
 
-void SFSuspensionModule::Simulate(float DeltaTime, const FAllInputs& Inputs, FSimModuleTree& VehicleModuleSystem)
+void SFSuspensionModule::Simulate(float DeltaTime, const FAllInputs& Inputs, Chaos::FSimModuleTree& VehicleModuleSystem)
 {
 	{
 		float ForceIntoSurface = 0.0f;

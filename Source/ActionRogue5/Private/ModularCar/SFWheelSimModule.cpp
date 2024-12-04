@@ -14,7 +14,7 @@ SFWheelSimModule::~SFWheelSimModule()
 {
 }
 
-void SFWheelSimModule::Simulate(float DeltaTime, const FAllInputs& Inputs, FSimModuleTree& VehicleModuleSystem)
+void SFWheelSimModule::Simulate(float DeltaTime, const FAllInputs& Inputs, Chaos::FSimModuleTree& VehicleModuleSystem)
 {
 	float Re = Setup().Radius;
 	float K = 0.4f;
