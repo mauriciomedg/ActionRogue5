@@ -4,9 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "ChaosModularVehicle/ModularVehicleClusterPawn.h"
+
 #include "SModularVehicleClusterPawn.generated.h"
 
-class ASSimModuleWheel;
+class USVehicleSimWheelComponent;
+class USVehicleSimSuspensionComponent;
+//class UGeometryCollectionComponent;
 /**
  * 
  */
@@ -16,8 +19,22 @@ class ACTIONROGUE5_API ASModularVehicleClusterPawn : public AModularVehicleClust
 	GENERATED_BODY()
 	
 public:
-	//UPROPERTY(EditAnywhere, Category = "Attack")
-	//TObjectPtr<ASSimModuleWheel> Wheel;
 	
+	ASModularVehicleClusterPawn(const FObjectInitializer& ObjectInitializer);
 	virtual void BeginPlay() override;
+
+protected:
+
+	virtual void PostInitializeComponents() override;
+
+
+	UPROPERTY()
+	TArray<USVehicleSimWheelComponent*> Wheels;
+
+	UPROPERTY()
+	TArray<USVehicleSimSuspensionComponent*> Suspensions;
+
+	//UPROPERTY()
+	//TArray<TObjectPtr<UGeometryCollectionComponent>> GeometryCollectionForWheels;
+	
 };

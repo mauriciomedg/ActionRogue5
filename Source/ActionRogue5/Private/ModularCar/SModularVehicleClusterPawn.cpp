@@ -2,24 +2,27 @@
 
 
 #include "ModularCar/SModularVehicleClusterPawn.h"
-#include "ModularCar/SSimModuleWheel.h"
-#include "ChaosModularVehicle/VehicleSimWheelComponent.h"
-#include "ChaosModularVehicle/ModularVehicleBaseComponent.h"
+#include "ModularCar/SVehicleSimWheelComponent.h"
+#include "ModularCar/SVehicleSimSuspensionComponent.h"
+//#include "GeometryCollection/GeometryCollectionComponent.h"
 #include "ChaosModularVehicle/ClusterUnionVehicleComponent.h"
-#include "PhysicsEngine/ClusterUnionComponent.h"
+
+ASModularVehicleClusterPawn::ASModularVehicleClusterPawn(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+}
+
+void ASModularVehicleClusterPawn::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	
+	GetComponents<USVehicleSimWheelComponent>(Wheels);
+	GetComponents<USVehicleSimSuspensionComponent>(Suspensions);
+}
+
 
 void ASModularVehicleClusterPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	//if (Wheel && Wheel->SimComponent)
-	//{
-	//	TArray<FClusterUnionBoneData> BonesData;
-	//	TArray<FClusterUnionBoneData> RemovedBoneIDs;
-	//	TArray<int32> BoneIds;
-	//
-	//	ClusterUnionVehicleComponent->AddComponentToCluster(Cast<UPrimitiveComponent>(Wheel->MeshComp), BoneIds);
-	//	VehicleSimComponent->AddComponentToSimulation(Cast<UPrimitiveComponent>(Wheel->SimComponent), BonesData, RemovedBoneIDs, true);
-	//}
 }
 
