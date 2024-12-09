@@ -5,12 +5,12 @@
 #include "PhysicsProxy/ClusterUnionPhysicsProxy.h"
 #include "ModularCar/SFSuspensionModule.h"
 
-static TAutoConsoleVariable<float> CVarSuspensionMaxRaise(TEXT("su.SuspensionMaxRaise"), 5.0f, TEXT("Suspension Max Raise"), ECVF_Cheat);
-static TAutoConsoleVariable<float> CVarSuspensionMaxDrop(TEXT("su.SuspensionMaxDrop"), 5.0f, TEXT("Suspension Max Drop"), ECVF_Cheat);
-static TAutoConsoleVariable<float> CVarSpringRate(TEXT("su.SpringRate"), 100.0f, TEXT("Spring Rate"), ECVF_Cheat);
-static TAutoConsoleVariable<float> CVarSpringPreload(TEXT("su.SpringPreload"), 50.0f, TEXT("Spring Preload"), ECVF_Cheat);
-static TAutoConsoleVariable<float> CVarSpringDamping(TEXT("su.SpringDamping"), 0.9f, TEXT("Spring Damping"), ECVF_Cheat);
-static TAutoConsoleVariable<float> CVarSuspensionForceEffect(TEXT("su.SuspensionForceEffect"), 100.0f, TEXT("Suspension Force Effect"), ECVF_Cheat);
+static TAutoConsoleVariable<float> CVarSuspensionMaxRaise(TEXT("su.SuspensionMaxRaise"), 10.0f, TEXT("Suspension Max Raise"), ECVF_Cheat);
+static TAutoConsoleVariable<float> CVarSuspensionMaxDrop(TEXT("su.SuspensionMaxDrop"), 10.0f, TEXT("Suspension Max Drop"), ECVF_Cheat);
+static TAutoConsoleVariable<float> CVarSpringRate(TEXT("su.SpringRate"), 1000.0f, TEXT("Spring Rate"), ECVF_Cheat);
+static TAutoConsoleVariable<float> CVarSpringPreload(TEXT("su.SpringPreload"), 100.0f, TEXT("Spring Preload"), ECVF_Cheat);
+static TAutoConsoleVariable<float> CVarSpringDamping(TEXT("su.SpringDamping"), 0.5f, TEXT("Spring Damping"), ECVF_Cheat);
+static TAutoConsoleVariable<float> CVarSuspensionForceEffect(TEXT("su.SuspensionForceEffect"), 100000.0f, TEXT("Suspension Force Effect"), ECVF_Cheat);
 
 
 USModularVehicleBaseComponent::USModularVehicleBaseComponent(const FObjectInitializer& ObjectInitializer)
@@ -59,10 +59,11 @@ void USModularVehicleBaseComponent::setValuesModularVehicle()
 							
 							Setup.MaxRaise = SuspensionMaxRaise;
 							Setup.MaxDrop = SuspensionMaxDrop;
-							Setup.SpringRate = Chaos::MToCm(SpringRate);
-							Setup.SpringPreload = Chaos::MToCm(SpringPreload);
+							Setup.SpringRate = SpringRate;  //Chaos::MToCm(SpringRate);
+							Setup.SpringPreload = SpringPreload; // Chaos::MToCm(SpringPreload);
 							Setup.SpringDamping = SpringDamping;
 							Setup.SuspensionForceEffect = SuspensionForceEffect;
+							Setup.MaxLength = FMath::Abs(SuspensionMaxRaise + SuspensionMaxDrop);
 
 							FString String;
 							Module->GetDebugString(String);

@@ -14,8 +14,8 @@ Chaos::ISimulationModuleBase* USVehicleSimSuspensionComponent::CreateNewCoreModu
 	Settings.SuspensionAxis = SuspensionAxis;
 	Settings.MaxRaise = SuspensionMaxRaise;
 	Settings.MaxDrop = SuspensionMaxDrop;
-	Settings.SpringRate = Chaos::MToCm(SpringRate);
-	Settings.SpringPreload = Chaos::MToCm(SpringPreload);
+	Settings.SpringRate = SpringRate; // Chaos::MToCm(SpringRate);
+	Settings.SpringPreload = SpringPreload; // Chaos::MToCm(SpringPreload);
 	Settings.SpringDamping = SpringDamping;
 	Settings.SuspensionForceEffect = SuspensionForceEffect;
 
