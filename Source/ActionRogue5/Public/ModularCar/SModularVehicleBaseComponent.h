@@ -19,6 +19,8 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	bool SetAcc = true;
+
 public:
 	
 	USModularVehicleBaseComponent(const FObjectInitializer& ObjectInitializer);
@@ -32,6 +34,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void setValuesModularVehicle();
+
+	void setG();
 
 	UPROPERTY(VisibleAnywhere, Category = "FineTuneVehicle")
 	float SuspensionMaxRaise = 5.0f;

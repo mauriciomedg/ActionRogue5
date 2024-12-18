@@ -4,7 +4,9 @@
 #include "ModularCar/SModularVehicleBaseComponent.h"
 #include "PhysicsProxy/ClusterUnionPhysicsProxy.h"
 #include "ModularCar/SFSuspensionModule.h"
+#include "PBDRigidsSolver.h"
 
+static TAutoConsoleVariable<bool> CVarSetAcc(TEXT("su.SetAcc"), false, TEXT("Suspension Max Raise"), ECVF_Cheat);
 static TAutoConsoleVariable<float> CVarSuspensionMaxRaise(TEXT("su.SuspensionMaxRaise"), 10.0f, TEXT("Suspension Max Raise"), ECVF_Cheat);
 static TAutoConsoleVariable<float> CVarSuspensionMaxDrop(TEXT("su.SuspensionMaxDrop"), 15.0f, TEXT("Suspension Max Drop"), ECVF_Cheat);
 static TAutoConsoleVariable<float> CVarSpringRate(TEXT("su.SpringRate"), 1000.0f, TEXT("Spring Rate"), ECVF_Cheat);
@@ -76,8 +78,86 @@ void USModularVehicleBaseComponent::setValuesModularVehicle()
 		});
 }
 
+void USModularVehicleBaseComponent::setG()
+{
+	Chaos::FClusterUnionPhysicsProxy* Proxy = static_cast<Chaos::FClusterUnionPhysicsProxy*>(GetPhysicsProxy());
+	Chaos::FPBDRigidsSolver* Solver = Proxy->GetSolver<Chaos::FPBDRigidsSolver>();
+	
+	Chaos::FPBDRigidsEvolutionGBF& Evolution = *static_cast<Chaos::FPBDRigidsSolver*>(Proxy->GetSolver<Chaos::FPBDRigidsSolver>())->GetEvolution();
+
+	Solver->EnqueueCommandImmediate([&]() mutable
+			{
+	Evolution.AddForceFunction([&](Chaos::TTransientPBDRigidParticleHandle<Chaos::FReal, 3>& HandleIn, const Chaos::FReal Dt) {
+			HandleIn.AddForce(FVector(0.0, 900.0, -980.f) / HandleIn.InvM());
+			//Evolution.GetGravityForces().SetAcceleration(Chaos::FVec3(0, 100, 0.0), HandleIn.GravityGroupIndex());
+		});
+	
+		});
+
+	//Evolution.GetGravityForces().SetAcceleration(FVector(0.0, 900.0, -980.f), 0);
+
+
+	//Solver->EnqueueCommandImmediate([&]() mutable
+	//	{
+	//		Chaos::FClusterUnionManager& ClusterUnionManager = Evolution.GetRigidClustering().GetClusterUnionManager();
+	//		const Chaos::FClusterUnionIndex& CUI = Proxy->GetClusterUnionIndex();
+	//		if (Chaos::FClusterUnion* ClusterUnion = ClusterUnionManager.FindClusterUnion(CUI))
+	//		{
+	//			TArray<Chaos::FPBDRigidParticleHandle*> Particles = ClusterUnion->ChildParticles;
+	//			TUniquePtr<Chaos::FSimModuleTree>& SimModuleTree = VehicleSimulationPT->AccessSimComponentTree();
+	//
+	//			const TArray<Chaos::FSimModuleTree::FSimModuleNode>& ModuleArray = SimModuleTree->GetSimulationModuleTree();
+	//			for (const Chaos::FSimModuleTree::FSimModuleNode& Node : ModuleArray)
+	//			{
+	//				if (Node.IsValid() && Node.SimModule && Node.SimModule->IsEnabled())
+	//				{
+	//					Chaos::FPBDRigidParticleHandle* Child = Node.SimModule->GetParticleFromUniqueIndex(Node.SimModule->GetParticleIndex().Idx, Particles);
+	//					if (Child == nullptr)
+	//					{
+	//						continue;
+	//					}
+	//
+	//					Evolution.GetGravityForces().SetAcceleration(Chaos::FVec3(0, 0, 9800), Child->GravityGroupIndex());
+	//				}
+	//			}
+	//		}
+	//	});
+
+	//Solver->EnqueueCommandImmediate([&]() mutable
+	//	{
+	//		auto InternalParticle = Proxy->GetParticle_Internal();
+	//		if (InternalParticle)
+	//		{
+	//			InternalParticle->ClusterIds();// SetLinearEtherDrag(LinearDamping);
+	//			//Evolution->GetGravityForces().SetAcceleration(Chaos::FVec3(0, 0, 9800), InternalParticle->GravityGroupIndex());
+	//		}
+	//	});
+	////////////////////////////////////////////////////////////////////////////////////////////
+	//Chaos::FPBDRigidsEvolutionGBF* Evolution = Solver->GetEvolution();
+	//
+	//Solver->EnqueueCommandImmediate([&]() mutable
+	//	{
+	//		const TArray<Chaos::FPBDRigidParticleHandle*>& ParticlesActives = Evolution.GetParticles().GetActiveParticlesArray(); //GetActiveParticlesView();
+	//		
+	//		for (Chaos::FPBDRigidParticleHandle* PBDParticle : ParticlesActives)
+	//		{
+	//			auto& Particle = *PBDParticle;
+	//			//Evolution->GetGravityForces().SetAcceleration(Chaos::FVec3(0, 0, 9800), Particle.GravityGroupIndex());
+	//		}
+	//	});
+
+
+	
+}
+
 void USModularVehicleBaseComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	if (SetAcc && CVarSetAcc.GetValueOnGameThread())
+	{
+		setG();
+		SetAcc = false;
+	}
+	
 	if (CVarSuspensionMaxRaise.GetValueOnGameThread() != SuspensionMaxRaise)
 	{
 		SuspensionMaxRaise = CVarSuspensionMaxRaise.GetValueOnGameThread();
