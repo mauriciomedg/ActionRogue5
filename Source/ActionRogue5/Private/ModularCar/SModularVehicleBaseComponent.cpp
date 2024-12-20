@@ -2,8 +2,10 @@
 
 
 #include "ModularCar/SModularVehicleBaseComponent.h"
+#include "PhysicsEngine/ClusterUnionComponent.h"
 #include "PhysicsProxy/ClusterUnionPhysicsProxy.h"
 #include "ModularCar/SFSuspensionModule.h"
+#include "ModularCar/SFChassisModule.h"
 #include "PBDRigidsSolver.h"
 
 static TAutoConsoleVariable<bool> CVarSetAcc(TEXT("su.SetAcc"), false, TEXT("Suspension Max Raise"), ECVF_Cheat);
@@ -17,12 +19,47 @@ static TAutoConsoleVariable<float> CVarSuspensionForceEffect(TEXT("su.Suspension
 
 USModularVehicleBaseComponent::USModularVehicleBaseComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
+	, GravityDirection(0.0, 0.0, -980.0)
 {
 }
 
 void USModularVehicleBaseComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//Chaos::FClusterUnionPhysicsProxy* Proxy = static_cast<Chaos::FClusterUnionPhysicsProxy*>(GetPhysicsProxy());
+	//
+	//if (Proxy)
+	//{
+	//	auto InvM = Proxy->GetParticle_External()->InvM();
+	//	TotalMass = 1.0 / InvM;
+	//}
+	
+	// This gives us access to the PT parent cluster and child particles
+	
+	
+	//Chaos::FClusterUnionPhysicsProxy* Proxy = static_cast<Chaos::FClusterUnionPhysicsProxy*>(GetPhysicsProxy());
+	//Chaos::FPBDRigidsSolver* Solver = Proxy->GetSolver<Chaos::FPBDRigidsSolver>();
+	//
+	//Chaos::FPBDRigidsEvolutionGBF& Evolution = *static_cast<Chaos::FPBDRigidsSolver*>(Proxy->GetSolver<Chaos::FPBDRigidsSolver>())->GetEvolution();
+	//
+	//Solver->EnqueueCommandImmediate([&]() mutable
+	//	{
+	//
+	//		Chaos::FClusterUnionManager& ClusterUnionManager = Evolution.GetRigidClustering().GetClusterUnionManager();
+	//		const Chaos::FClusterUnionIndex& CUI = Proxy->GetClusterUnionIndex();
+	//		if (Chaos::FClusterUnion* ClusterUnion = ClusterUnionManager.FindClusterUnion(CUI))
+	//		{
+	//			Chaos::FPBDRigidClusteredParticleHandle* ClusterHandle = ClusterUnion->InternalCluster;
+	//			TArray<Chaos::FPBDRigidParticleHandle*> Particles = ClusterUnion->ChildParticles;
+	//			for (auto Particle : Particles)
+	//			{
+	//				TotalMass += 1.0 / Particle->InvM();
+	//			}
+	//
+	//			TArray<Chaos::FPBDRigidClusteredParticleHandle*> Clusters;
+	//		}
+	//	});
 }
 
 //#if WITH_EDITOR
@@ -72,6 +109,40 @@ void USModularVehicleBaseComponent::setValuesModularVehicle()
 							UE_LOG(LogTemp, Warning, TEXT("..%s"), *String);
 						}
 						
+					}
+				}
+			}
+		});
+}
+
+void USModularVehicleBaseComponent::SetGravity()
+{
+	Chaos::FClusterUnionPhysicsProxy* Proxy = static_cast<Chaos::FClusterUnionPhysicsProxy*>(GetPhysicsProxy());
+	Chaos::FPBDRigidsSolver* Solver = Proxy->GetSolver<Chaos::FPBDRigidsSolver>();
+	Solver->EnqueueCommandImmediate([Proxy, this]() mutable
+		{
+			if (VehicleSimulationPT)
+			{
+				TUniquePtr<Chaos::FSimModuleTree>& SimModuleTree = VehicleSimulationPT->AccessSimComponentTree();
+	
+				for (int I = 0; I < SimModuleTree->GetNumNodes(); I++)
+				{
+					if (Chaos::ISimulationModuleBase* Module = SimModuleTree->GetNode(I).SimModule)
+					{
+						if (Module->GetSimType() == Chaos::eSimType::Chassis)
+						{
+							SFChassisModule* ModuleSuspension = static_cast<SFChassisModule*>(Module);
+	
+							if (Chaos::FClusterUnionPhysicsProxy::FInternalParticle* ParentParticle = Proxy->GetParticle_Internal())
+							{
+								const FTransform BodyTransform(ParentParticle->GetR(), ParentParticle->GetX());
+
+								auto InvM = Proxy->GetParticle_External()->InvM();
+
+								float Mass = 1 / InvM;
+								ModuleSuspension->Gravity = BodyTransform.InverseTransformVector(this->GravityDirection * Mass);
+							}
+						}
 					}
 				}
 			}
@@ -152,9 +223,11 @@ void USModularVehicleBaseComponent::setG()
 
 void USModularVehicleBaseComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	SetGravity();
+
 	if (SetAcc && CVarSetAcc.GetValueOnGameThread())
 	{
-		setG();
+		//setG();
 		SetAcc = false;
 	}
 	

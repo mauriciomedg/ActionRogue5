@@ -37,6 +37,11 @@ public:
 
 	void setG();
 
+	void SetGravity();
+
+	UPROPERTY(VisibleAnywhere, Category = "FineTuneVehicle")
+	FVector GravityDirection;
+
 	UPROPERTY(VisibleAnywhere, Category = "FineTuneVehicle")
 	float SuspensionMaxRaise = 5.0f;
 
