@@ -39,7 +39,7 @@ public:
 
 	void SetGravity();
 
-	UPROPERTY(VisibleAnywhere, Category = "FineTuneVehicle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FineTuneVehicle")
 	FVector GravityDirection;
 
 	UPROPERTY(VisibleAnywhere, Category = "FineTuneVehicle")

@@ -142,6 +142,8 @@ void USModularVehicleBaseComponent::SetGravity()
 								float Mass = 1 / InvM;
 								ModuleSuspension->Gravity = BodyTransform.InverseTransformVector(this->GravityDirection * Mass);
 							}
+
+							break;
 						}
 					}
 				}
