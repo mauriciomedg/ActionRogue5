@@ -7,10 +7,11 @@
 #include "ModularCar/SFSuspensionModule.h"
 #include "ModularCar/SFChassisModule.h"
 #include "PBDRigidsSolver.h"
+//#include "Misc/ConsoleManager.h"
 
 static TAutoConsoleVariable<bool> CVarSetAcc(TEXT("su.SetAcc"), false, TEXT("Suspension Max Raise"), ECVF_Cheat);
 static TAutoConsoleVariable<float> CVarSuspensionMaxRaise(TEXT("su.SuspensionMaxRaise"), 10.0f, TEXT("Suspension Max Raise"), ECVF_Cheat);
-static TAutoConsoleVariable<float> CVarSuspensionMaxDrop(TEXT("su.SuspensionMaxDrop"), 15.0f, TEXT("Suspension Max Drop"), ECVF_Cheat);
+static TAutoConsoleVariable<float> CVarSuspensionMaxDrop(TEXT("su.SuspensionMaxDrop"), 100.0f, TEXT("Suspension Max Drop"), ECVF_Cheat);
 static TAutoConsoleVariable<float> CVarSpringRate(TEXT("su.SpringRate"), 1000.0f, TEXT("Spring Rate"), ECVF_Cheat);
 static TAutoConsoleVariable<float> CVarSpringPreload(TEXT("su.SpringPreload"), 100.0f, TEXT("Spring Preload"), ECVF_Cheat);
 static TAutoConsoleVariable<float> CVarSpringDamping(TEXT("su.SpringDamping"), 0.5f, TEXT("Spring Damping"), ECVF_Cheat);
@@ -27,6 +28,8 @@ void USModularVehicleBaseComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	IConsoleManager& ConsoleManager = IConsoleManager::Get();
+	ConsoleManager.FindConsoleVariable(TEXT("p.Chaos.Suspension.SlopeThreshold"))->Set(1, ECVF_SetByCode);
 	//Chaos::FClusterUnionPhysicsProxy* Proxy = static_cast<Chaos::FClusterUnionPhysicsProxy*>(GetPhysicsProxy());
 	//
 	//if (Proxy)
