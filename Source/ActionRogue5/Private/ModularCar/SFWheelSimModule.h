@@ -14,16 +14,9 @@ class ACTIONROGUE5_API SFWheelSimModule : public Chaos::FWheelSimModule
 {
 public:
 	SFWheelSimModule(const Chaos::FWheelSettings& Settings);
-	virtual void Simulate(float DeltaTime, const Chaos::FAllInputs& Inputs, Chaos::FSimModuleTree& VehicleModuleSystem) override;
-
-	void SetForceIntoSurface(float ForceIntoSurfaceIn) { ForceIntoSurface = ForceIntoSurfaceIn; }
-	
-	virtual bool IsBehaviourType(Chaos::eSimModuleTypeFlags InType) const override { return (InType & Chaos::TorqueBased) || (InType & Chaos::Velocity); }
-
-	virtual float GetForceIntoSurface() const { return ForceIntoSurface; }
-	virtual void SetSurfaceFriction(float FrictionIn) { SurfaceFriction = FrictionIn; }
-	virtual void Animate(Chaos::FClusterUnionPhysicsProxy* Proxy);
-
 	~SFWheelSimModule();
+
+	virtual void Simulate(float DeltaTime, const Chaos::FAllInputs& Inputs, Chaos::FSimModuleTree& VehicleModuleSystem) override;
+	virtual void Animate(Chaos::FClusterUnionPhysicsProxy* Proxy);
 
 };
