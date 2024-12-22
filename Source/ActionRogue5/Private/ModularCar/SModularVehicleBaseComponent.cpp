@@ -18,7 +18,6 @@ static TAutoConsoleVariable<float> CVarSuspensionForceEffect(TEXT("su.Suspension
 
 USModularVehicleBaseComponent::USModularVehicleBaseComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
-	, GravityDirection(0.0, 0.0, -980.0)
 {
 }
 
@@ -69,11 +68,11 @@ void USModularVehicleBaseComponent::setValuesModularVehicle()
 		});
 }
 
-void USModularVehicleBaseComponent::SetGravity()
+void USModularVehicleBaseComponent::SetGravity(const FVector& GravityAcceleration)
 {
 	Chaos::FClusterUnionPhysicsProxy* Proxy = static_cast<Chaos::FClusterUnionPhysicsProxy*>(GetPhysicsProxy());
 	Chaos::FPBDRigidsSolver* Solver = Proxy->GetSolver<Chaos::FPBDRigidsSolver>();
-	Solver->EnqueueCommandImmediate([Proxy, this]() mutable
+	Solver->EnqueueCommandImmediate([Proxy, this, GravityAcceleration]() mutable
 		{
 			if (VehicleSimulationPT)
 			{
@@ -94,7 +93,7 @@ void USModularVehicleBaseComponent::SetGravity()
 								auto InvM = Proxy->GetParticle_External()->InvM();
 
 								float Mass = 1 / InvM;
-								ModuleSuspension->Gravity = BodyTransform.InverseTransformVector(this->GravityDirection * Mass);
+								ModuleSuspension->Gravity = BodyTransform.InverseTransformVector(GravityAcceleration * Mass);
 							}
 
 							break;
@@ -107,7 +106,6 @@ void USModularVehicleBaseComponent::SetGravity()
 
 void USModularVehicleBaseComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	SetGravity();
 
 	if (CVarSuspensionMaxRaise.GetValueOnGameThread() != SuspensionMaxRaise)
 	{

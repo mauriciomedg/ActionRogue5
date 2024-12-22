@@ -19,20 +19,17 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	void setValuesModularVehicle();
+
 public:
 	
 	USModularVehicleBaseComponent(const FObjectInitializer& ObjectInitializer);
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	UFUNCTION(BlueprintCallable)
-	void setValuesModularVehicle();
 		
-	void SetGravity();
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FineTuneVehicle")
-	FVector GravityDirection;
+	UFUNCTION(BlueprintCallable)
+	void SetGravity(const FVector& GravityAcceleration);
 
 	UPROPERTY(VisibleAnywhere, Category = "FineTuneVehicle")
 	float SuspensionMaxRaise = 5.0f;
