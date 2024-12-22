@@ -19,8 +19,6 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	bool SetAcc = true;
-
 public:
 	
 	USModularVehicleBaseComponent(const FObjectInitializer& ObjectInitializer);
@@ -28,15 +26,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-//#if WITH_EDITOR
-//	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent);
-//#endif
-
 	UFUNCTION(BlueprintCallable)
 	void setValuesModularVehicle();
-
-	void setG();
-
+		
 	void SetGravity();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FineTuneVehicle")
@@ -45,9 +37,6 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "FineTuneVehicle")
 	float SuspensionMaxRaise = 5.0f;
 
-	//UFUNCTION()
-	//void OnRep_ValueChanged(); // this is only trigered automatically for clients. For the server we need to manually call it.
-	
 	UPROPERTY(VisibleAnywhere, Category = "FineTuneVehicle")
 	float SuspensionMaxDrop = 5.0f;
 	

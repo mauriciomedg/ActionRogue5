@@ -7,9 +7,7 @@
 #include "ModularCar/SFSuspensionModule.h"
 #include "ModularCar/SFChassisModule.h"
 #include "PBDRigidsSolver.h"
-//#include "Misc/ConsoleManager.h"
 
-static TAutoConsoleVariable<bool> CVarSetAcc(TEXT("su.SetAcc"), false, TEXT("Suspension Max Raise"), ECVF_Cheat);
 static TAutoConsoleVariable<float> CVarSuspensionMaxRaise(TEXT("su.SuspensionMaxRaise"), 10.0f, TEXT("Suspension Max Raise"), ECVF_Cheat);
 static TAutoConsoleVariable<float> CVarSuspensionMaxDrop(TEXT("su.SuspensionMaxDrop"), 100.0f, TEXT("Suspension Max Drop"), ECVF_Cheat);
 static TAutoConsoleVariable<float> CVarSpringRate(TEXT("su.SpringRate"), 1000.0f, TEXT("Spring Rate"), ECVF_Cheat);
@@ -30,54 +28,7 @@ void USModularVehicleBaseComponent::BeginPlay()
 
 	IConsoleManager& ConsoleManager = IConsoleManager::Get();
 	ConsoleManager.FindConsoleVariable(TEXT("p.Chaos.Suspension.SlopeThreshold"))->Set(1, ECVF_SetByCode);
-	//Chaos::FClusterUnionPhysicsProxy* Proxy = static_cast<Chaos::FClusterUnionPhysicsProxy*>(GetPhysicsProxy());
-	//
-	//if (Proxy)
-	//{
-	//	auto InvM = Proxy->GetParticle_External()->InvM();
-	//	TotalMass = 1.0 / InvM;
-	//}
-	
-	// This gives us access to the PT parent cluster and child particles
-	
-	
-	//Chaos::FClusterUnionPhysicsProxy* Proxy = static_cast<Chaos::FClusterUnionPhysicsProxy*>(GetPhysicsProxy());
-	//Chaos::FPBDRigidsSolver* Solver = Proxy->GetSolver<Chaos::FPBDRigidsSolver>();
-	//
-	//Chaos::FPBDRigidsEvolutionGBF& Evolution = *static_cast<Chaos::FPBDRigidsSolver*>(Proxy->GetSolver<Chaos::FPBDRigidsSolver>())->GetEvolution();
-	//
-	//Solver->EnqueueCommandImmediate([&]() mutable
-	//	{
-	//
-	//		Chaos::FClusterUnionManager& ClusterUnionManager = Evolution.GetRigidClustering().GetClusterUnionManager();
-	//		const Chaos::FClusterUnionIndex& CUI = Proxy->GetClusterUnionIndex();
-	//		if (Chaos::FClusterUnion* ClusterUnion = ClusterUnionManager.FindClusterUnion(CUI))
-	//		{
-	//			Chaos::FPBDRigidClusteredParticleHandle* ClusterHandle = ClusterUnion->InternalCluster;
-	//			TArray<Chaos::FPBDRigidParticleHandle*> Particles = ClusterUnion->ChildParticles;
-	//			for (auto Particle : Particles)
-	//			{
-	//				TotalMass += 1.0 / Particle->InvM();
-	//			}
-	//
-	//			TArray<Chaos::FPBDRigidClusteredParticleHandle*> Clusters;
-	//		}
-	//	});
 }
-
-//#if WITH_EDITOR
-//void USModularVehicleBaseComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-//{
-//	FName PropertyName = (PropertyChangedEvent.Property != nullptr) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
-//
-//	if (PropertyName == GET_MEMBER_NAME_CHECKED(USModularVehicleBaseComponent, SuspensionMaxRaise))
-//	{
-//		UE_LOG(LogTemp, Log, TEXT("MyProperty has been changed in the editor to %d"), SuspensionMaxRaise);
-//	}
-//
-//	Super::PostEditChangeProperty(PropertyChangedEvent);
-//}
-//#endif
 
 void USModularVehicleBaseComponent::setValuesModularVehicle()
 {
@@ -154,88 +105,10 @@ void USModularVehicleBaseComponent::SetGravity()
 		});
 }
 
-void USModularVehicleBaseComponent::setG()
-{
-	Chaos::FClusterUnionPhysicsProxy* Proxy = static_cast<Chaos::FClusterUnionPhysicsProxy*>(GetPhysicsProxy());
-	Chaos::FPBDRigidsSolver* Solver = Proxy->GetSolver<Chaos::FPBDRigidsSolver>();
-	
-	Chaos::FPBDRigidsEvolutionGBF& Evolution = *static_cast<Chaos::FPBDRigidsSolver*>(Proxy->GetSolver<Chaos::FPBDRigidsSolver>())->GetEvolution();
-
-	Solver->EnqueueCommandImmediate([&]() mutable
-			{
-	Evolution.AddForceFunction([&](Chaos::TTransientPBDRigidParticleHandle<Chaos::FReal, 3>& HandleIn, const Chaos::FReal Dt) {
-			HandleIn.AddForce(FVector(0.0, 900.0, -980.f) / HandleIn.InvM());
-			//Evolution.GetGravityForces().SetAcceleration(Chaos::FVec3(0, 100, 0.0), HandleIn.GravityGroupIndex());
-		});
-	
-		});
-
-	//Evolution.GetGravityForces().SetAcceleration(FVector(0.0, 900.0, -980.f), 0);
-
-
-	//Solver->EnqueueCommandImmediate([&]() mutable
-	//	{
-	//		Chaos::FClusterUnionManager& ClusterUnionManager = Evolution.GetRigidClustering().GetClusterUnionManager();
-	//		const Chaos::FClusterUnionIndex& CUI = Proxy->GetClusterUnionIndex();
-	//		if (Chaos::FClusterUnion* ClusterUnion = ClusterUnionManager.FindClusterUnion(CUI))
-	//		{
-	//			TArray<Chaos::FPBDRigidParticleHandle*> Particles = ClusterUnion->ChildParticles;
-	//			TUniquePtr<Chaos::FSimModuleTree>& SimModuleTree = VehicleSimulationPT->AccessSimComponentTree();
-	//
-	//			const TArray<Chaos::FSimModuleTree::FSimModuleNode>& ModuleArray = SimModuleTree->GetSimulationModuleTree();
-	//			for (const Chaos::FSimModuleTree::FSimModuleNode& Node : ModuleArray)
-	//			{
-	//				if (Node.IsValid() && Node.SimModule && Node.SimModule->IsEnabled())
-	//				{
-	//					Chaos::FPBDRigidParticleHandle* Child = Node.SimModule->GetParticleFromUniqueIndex(Node.SimModule->GetParticleIndex().Idx, Particles);
-	//					if (Child == nullptr)
-	//					{
-	//						continue;
-	//					}
-	//
-	//					Evolution.GetGravityForces().SetAcceleration(Chaos::FVec3(0, 0, 9800), Child->GravityGroupIndex());
-	//				}
-	//			}
-	//		}
-	//	});
-
-	//Solver->EnqueueCommandImmediate([&]() mutable
-	//	{
-	//		auto InternalParticle = Proxy->GetParticle_Internal();
-	//		if (InternalParticle)
-	//		{
-	//			InternalParticle->ClusterIds();// SetLinearEtherDrag(LinearDamping);
-	//			//Evolution->GetGravityForces().SetAcceleration(Chaos::FVec3(0, 0, 9800), InternalParticle->GravityGroupIndex());
-	//		}
-	//	});
-	////////////////////////////////////////////////////////////////////////////////////////////
-	//Chaos::FPBDRigidsEvolutionGBF* Evolution = Solver->GetEvolution();
-	//
-	//Solver->EnqueueCommandImmediate([&]() mutable
-	//	{
-	//		const TArray<Chaos::FPBDRigidParticleHandle*>& ParticlesActives = Evolution.GetParticles().GetActiveParticlesArray(); //GetActiveParticlesView();
-	//		
-	//		for (Chaos::FPBDRigidParticleHandle* PBDParticle : ParticlesActives)
-	//		{
-	//			auto& Particle = *PBDParticle;
-	//			//Evolution->GetGravityForces().SetAcceleration(Chaos::FVec3(0, 0, 9800), Particle.GravityGroupIndex());
-	//		}
-	//	});
-
-
-	
-}
-
 void USModularVehicleBaseComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	SetGravity();
 
-	if (SetAcc && CVarSetAcc.GetValueOnGameThread())
-	{
-		//setG();
-		SetAcc = false;
-	}
-	
 	if (CVarSuspensionMaxRaise.GetValueOnGameThread() != SuspensionMaxRaise)
 	{
 		SuspensionMaxRaise = CVarSuspensionMaxRaise.GetValueOnGameThread();
