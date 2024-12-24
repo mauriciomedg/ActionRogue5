@@ -9,7 +9,7 @@ using namespace Chaos;
 Chaos::ISimulationModuleBase* USVehicleSimSuspensionComponent::CreateNewCoreModule() const
 {
 	// use the UE properties to setup the physics state
-	Chaos::FSuspensionSettings Settings;
+	FSuspensionSettings Settings;
 
 	Settings.SuspensionAxis = SuspensionAxis;
 	Settings.MaxRaise = SuspensionMaxRaise;

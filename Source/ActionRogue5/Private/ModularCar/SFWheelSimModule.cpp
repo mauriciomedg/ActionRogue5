@@ -3,8 +3,6 @@
 
 #include "ModularCar/SFWheelSimModule.h"
 
-using namespace Chaos;
-
 SFWheelSimModule::SFWheelSimModule(const Chaos::FWheelSettings& Settings)
 	: Chaos::FWheelSimModule(Settings)
 {
@@ -14,16 +12,16 @@ SFWheelSimModule::~SFWheelSimModule()
 {
 }
 
-void SFWheelSimModule::Simulate(float DeltaTime, const FAllInputs& Inputs, Chaos::FSimModuleTree& VehicleModuleSystem)
+void SFWheelSimModule::Simulate(float DeltaTime, const Chaos::FAllInputs& Inputs, Chaos::FSimModuleTree& VehicleModuleSystem)
 {
 	float Re = Setup().Radius;
 	float K = 0.4f;
 	float TorqueScaling = 1.0f;
 	float TractionControlAndABSScaling = 0.98f;	// how close to perfection is the system working
 
-	float HandbrakeTorque = Setup().HandbrakeEnabled ? Inputs.ControlInputs.Handbrake * Setup().HandbrakeTorque : 0.0f;
-	SteerAngleDegrees = Setup().SteeringEnabled ? Inputs.ControlInputs.Steering * Setup().MaxSteeringAngle : 0.0f;
-	BrakeTorque = Inputs.ControlInputs.Brake * Setup().MaxBrakeTorque + HandbrakeTorque;
+	float HandbrakeTorque = Setup().HandbrakeEnabled ? Inputs.GetControls().GetMagnitude(Chaos::HandbrakeControlName) * Setup().HandbrakeTorque : 0.0f;
+	SteerAngleDegrees = Setup().SteeringEnabled ? Inputs.GetControls().GetMagnitude(Chaos::SteeringControlName) * Setup().MaxSteeringAngle : 0.0f;
+	BrakeTorque = Inputs.GetControls().GetMagnitude(Chaos::BrakeControlName) * Setup().MaxBrakeTorque + HandbrakeTorque;
 	LoadTorque = 0.0f;
 	ForceFromFriction = FVector::ZeroVector;
 	float TorqueFromGroundInteraction = 0.0f;
@@ -31,7 +29,7 @@ void SFWheelSimModule::Simulate(float DeltaTime, const FAllInputs& Inputs, Chaos
 
 	// TODO: think about doing this properly, stops vehicles rolling around on their own too much
 	// i.e. an auto handbrake feature
-	if (Setup().AutoHandbrakeEnabled && LocalLinearVelocity.X < Setup().AutoHandbrakeVelocityThreshold && (Inputs.ControlInputs.Brake < SMALL_NUMBER && Inputs.ControlInputs.Throttle < SMALL_NUMBER))
+	if (Setup().AutoHandbrakeEnabled && LocalLinearVelocity.X < Setup().AutoHandbrakeVelocityThreshold && (Inputs.GetControls().GetMagnitude(Chaos::BrakeControlName) < SMALL_NUMBER && Inputs.GetControls().GetMagnitude(Chaos::ThrottleControlName) < SMALL_NUMBER))
 	{
 		BrakeTorque = Setup().HandbrakeTorque;
 	}
@@ -42,7 +40,7 @@ void SFWheelSimModule::Simulate(float DeltaTime, const FAllInputs& Inputs, Chaos
 	{
 		FRotator SteeringRotator(0.f, SteerAngleDegrees, 0.f);
 		FVector Vel = SteeringRotator.UnrotateVector(LocalLinearVelocity);
-		FVector LocalWheelVelocity = (Setup().Axis == EWheelAxis::X) ? FVector(Vel.X, Vel.Y, Vel.Z) : FVector(Vel.Y, Vel.X, Vel.Z); // Potential Axis Swap
+		FVector LocalWheelVelocity = (Setup().Axis == Chaos::EWheelAxis::X) ? FVector(Vel.X, Vel.Y, Vel.Z) : FVector(Vel.Y, Vel.X, Vel.Z); // Potential Axis Swap
 		LocalWheelVelocity = Setup().ReverseDirection ? -LocalWheelVelocity : LocalWheelVelocity;
 
 		float GroundAngularVelocity = LocalWheelVelocity.Y / Re;
@@ -50,7 +48,7 @@ void SFWheelSimModule::Simulate(float DeltaTime, const FAllInputs& Inputs, Chaos
 		TorqueFromGroundInteraction = Delta * Setup().WheelInertia / DeltaTime; // torque from wheels moving over terrain
 
 		// X is longitudinal direction, Y is lateral
-		SlipAngle = FVehicleUtility::CalculateSlipAngle(LocalWheelVelocity.Y, LocalWheelVelocity.X);
+		SlipAngle = Chaos::FVehicleUtility::CalculateSlipAngle(LocalWheelVelocity.Y, LocalWheelVelocity.X);
 
 		float AppliedLinearDriveForce = DriveTorque / Re;
 		float AppliedLinearBrakeForce = FMath::Abs(BrakeTorque) / Re;
@@ -159,14 +157,14 @@ void SFWheelSimModule::Simulate(float DeltaTime, const FAllInputs& Inputs, Chaos
 		}
 
 		// Potential Axis Swap
-		if (Setup().Axis == EWheelAxis::X)
+		if (Setup().Axis == Chaos::EWheelAxis::X)
 		{
 			ForceFromFriction.X = FinalLongitudinalForce;
 			ForceFromFriction.Y = FinalLateralForce;
 		}
 		else
 		{
-			check(Setup().Axis == EWheelAxis::Y);
+			check(Setup().Axis == Chaos::EWheelAxis::Y);
 			ForceFromFriction.Y = FinalLongitudinalForce;
 			ForceFromFriction.X = FinalLateralForce;
 		}
@@ -202,11 +200,11 @@ void SFWheelSimModule::Simulate(float DeltaTime, const FAllInputs& Inputs, Chaos
 	IntegrateAngularVelocity(DeltaTime, Setup().WheelInertia, Setup().MaxRotationVel);
 }
 
-void SFWheelSimModule::Animate(FClusterUnionPhysicsProxy* Proxy)
+void SFWheelSimModule::Animate(Chaos::FClusterUnionPhysicsProxy* Proxy)
 {
 	if (Proxy)
 	{
-		if (FPBDRigidClusteredParticleHandle* ClusterChild = GetClusterParticle(Proxy))
+		if (Chaos::FPBDRigidClusteredParticleHandle* ClusterChild = GetClusterParticle(Proxy))
 		{
 			float Direction = Setup().ReverseDirection ? -1.0f : 1.0f;
 			FQuat Rot = (Setup().Axis == Chaos::EWheelAxis::Y) ? FQuat(FVector(1, 0, 0), -GetAngularPosition() * Direction) : FQuat(FVector(0, 1, 0), GetAngularPosition() * Direction);

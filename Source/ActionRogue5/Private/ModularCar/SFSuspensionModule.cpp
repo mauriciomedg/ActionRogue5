@@ -10,14 +10,14 @@
 
 using namespace Chaos;
 
-SFSuspensionModule::SFSuspensionModule(const Chaos::FSuspensionSettings& Settings)
+SFSuspensionModule::SFSuspensionModule(const FSuspensionSettings& Settings)
 	: FSuspensionSimModule(Settings)
 {
 }
 
 void SFSuspensionModule::Simulate(float DeltaTime, const FAllInputs& Inputs, Chaos::FSimModuleTree& VehicleModuleSystem)
 {
-	Chaos::FSuspensionSimModule::Simulate(DeltaTime, Inputs, VehicleModuleSystem);
+	FSuspensionSimModule::Simulate(DeltaTime, Inputs, VehicleModuleSystem);
 }
 
 SFSuspensionModule::~SFSuspensionModule()

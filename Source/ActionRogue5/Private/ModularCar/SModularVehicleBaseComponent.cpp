@@ -38,30 +38,40 @@ void USModularVehicleBaseComponent::setValuesModularVehicle()
 			if (VehicleSimulationPT)
 			{
 				TUniquePtr<Chaos::FSimModuleTree>& SimModuleTree = VehicleSimulationPT->AccessSimComponentTree();
-				
-				for (int I = 0; I < SimModuleTree->GetNumNodes(); I++)
+				const TArray<Chaos::FSimModuleTree::FSimModuleNode>& ModuleArray = SimModuleTree->GetSimulationModuleTree();
+
+				for (const Chaos::FSimModuleTree::FSimModuleNode& Node : ModuleArray)
 				{
-					if (Chaos::ISimulationModuleBase* Module = SimModuleTree->GetNode(I).SimModule)
+					if (Node.IsValid() && Node.SimModule && Node.SimModule->IsEnabled())
 					{
-						if (Module->GetSimType() == Chaos::eSimType::Suspension)
+
+						//for (int I = 0; I < SimModuleTree->GetNumNodes(); I++)
+						//{
+						if (Chaos::ISimulationModuleBase* Module = Node.SimModule)
 						{
-							SFSuspensionModule* ModuleSuspension = static_cast<SFSuspensionModule*>(Module);
+							if (FSuspensionSimModule* Suspension = Module->Cast<FSuspensionSimModule>())
+							{
+								//FSuspensionSimModule* Suspension = static_cast<FSuspensionSimModule*>(Node.SimModule);
 
-							Chaos::FSuspensionSettings& Setup = ModuleSuspension->AccessSetup();
-							
-							Setup.MaxRaise = SuspensionMaxRaise;
-							Setup.MaxDrop = SuspensionMaxDrop;
-							Setup.SpringRate = SpringRate;  //Chaos::MToCm(SpringRate);
-							Setup.SpringPreload = SpringPreload; // Chaos::MToCm(SpringPreload);
-							Setup.SpringDamping = SpringDamping;
-							Setup.SuspensionForceEffect = SuspensionForceEffect;
-							Setup.MaxLength = FMath::Abs(SuspensionMaxRaise + SuspensionMaxDrop);
+								//if (Module->GetSimType() == ESimModuleType::Suspension)
+								//{
+									//SFSuspensionModule* ModuleSuspension = static_cast<SFSuspensionModule*>(Module);
 
-							FString String;
-							Module->GetDebugString(String);
-							UE_LOG(LogTemp, Warning, TEXT("..%s"), *String);
+								FSuspensionSettings& Setup = Suspension->AccessSetup();
+
+								Setup.MaxRaise = SuspensionMaxRaise;
+								Setup.MaxDrop = SuspensionMaxDrop;
+								Setup.SpringRate = SpringRate;  //Chaos::MToCm(SpringRate);
+								Setup.SpringPreload = SpringPreload; // Chaos::MToCm(SpringPreload);
+								Setup.SpringDamping = SpringDamping;
+								Setup.SuspensionForceEffect = SuspensionForceEffect;
+								Setup.MaxLength = FMath::Abs(SuspensionMaxRaise + SuspensionMaxDrop);
+
+								FString String;
+								Module->GetDebugString(String);
+								UE_LOG(LogTemp, Warning, TEXT("..%s"), *String)
+							}
 						}
-						
 					}
 				}
 			}
@@ -78,14 +88,18 @@ void USModularVehicleBaseComponent::SetGravity(const FVector& GravityAcceleratio
 			{
 				TUniquePtr<Chaos::FSimModuleTree>& SimModuleTree = VehicleSimulationPT->AccessSimComponentTree();
 	
-				for (int I = 0; I < SimModuleTree->GetNumNodes(); I++)
+				const TArray<Chaos::FSimModuleTree::FSimModuleNode>& ModuleArray = SimModuleTree->GetSimulationModuleTree();
+
+				for (const Chaos::FSimModuleTree::FSimModuleNode& Node : ModuleArray)
 				{
-					if (Chaos::ISimulationModuleBase* Module = SimModuleTree->GetNode(I).SimModule)
+					//if (Chaos::ISimulationModuleBase* Module = SimModuleTree->GetNode(I).SimModule)
+					//{
+					if (Chaos::ISimulationModuleBase* Module = Node.SimModule)
 					{
-						if (Module->GetSimType() == Chaos::eSimType::Chassis)
+						//if (Module->GetSimType() == Chaos::eSimType::Chassis)
+						//{
+						if (SFChassisModule* ModuleChassis = Module->Cast<SFChassisModule>())
 						{
-							SFChassisModule* ModuleSuspension = static_cast<SFChassisModule*>(Module);
-	
 							if (Chaos::FClusterUnionPhysicsProxy::FInternalParticle* ParentParticle = Proxy->GetParticle_Internal())
 							{
 								const FTransform BodyTransform(ParentParticle->GetR(), ParentParticle->GetX());
@@ -93,7 +107,7 @@ void USModularVehicleBaseComponent::SetGravity(const FVector& GravityAcceleratio
 								auto InvM = Proxy->GetParticle_External()->InvM();
 
 								float Mass = 1 / InvM;
-								ModuleSuspension->Gravity = BodyTransform.InverseTransformVector(GravityAcceleration * Mass);
+								ModuleChassis->Gravity = BodyTransform.InverseTransformVector(GravityAcceleration * Mass);
 							}
 
 							break;
