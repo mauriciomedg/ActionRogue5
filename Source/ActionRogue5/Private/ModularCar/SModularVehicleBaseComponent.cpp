@@ -78,6 +78,11 @@ void USModularVehicleBaseComponent::setValuesModularVehicle()
 		});
 }
 
+void USModularVehicleBaseComponent::CallProduceInput()
+{
+	UModularVehicleBaseComponent::ProduceInput(0, 0);
+}
+
 void USModularVehicleBaseComponent::SetGravity(const FVector& GravityAcceleration)
 {
 	Chaos::FClusterUnionPhysicsProxy* Proxy = static_cast<Chaos::FClusterUnionPhysicsProxy*>(GetPhysicsProxy());
@@ -120,6 +125,10 @@ void USModularVehicleBaseComponent::SetGravity(const FVector& GravityAcceleratio
 
 void USModularVehicleBaseComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// Temporal call to make the inputs work.
+	CallProduceInput();
 
 	if (CVarSuspensionMaxRaise.GetValueOnGameThread() != SuspensionMaxRaise)
 	{

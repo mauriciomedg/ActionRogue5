@@ -21,6 +21,8 @@ protected:
 
 	void setValuesModularVehicle();
 
+	void CallProduceInput();
+
 public:
 	
 	USModularVehicleBaseComponent(const FObjectInitializer& ObjectInitializer);
