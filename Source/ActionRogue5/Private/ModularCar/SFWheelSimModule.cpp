@@ -5,6 +5,10 @@
 
 SFWheelSimModule::SFWheelSimModule(const Chaos::FWheelSettings& Settings)
 	: Chaos::FWheelSimModule(Settings)
+	, BrakeTorque(0.0f)
+	, ForceFromFriction(FVector::ZeroVector)
+	, MassPerWheel(500.0f)
+	, SteerAngleDegrees(0.0f)
 {
 }
 
@@ -34,7 +38,7 @@ void SFWheelSimModule::Simulate(float DeltaTime, const Chaos::FAllInputs& Inputs
 		BrakeTorque = Setup().HandbrakeTorque;
 	}
 
-	bTouchingGround = ForceIntoSurface > SMALL_NUMBER;
+	bTouchingGround = GetForceIntoSurface() > SMALL_NUMBER;
 
 	if (bTouchingGround)
 	{
@@ -54,7 +58,7 @@ void SFWheelSimModule::Simulate(float DeltaTime, const Chaos::FAllInputs& Inputs
 		float AppliedLinearBrakeForce = FMath::Abs(BrakeTorque) / Re;
 
 		// Longitudinal multiplier now affecting both brake and steering equally
-		AvailableGrip = ForceIntoSurface * SurfaceFriction * Setup().FrictionMultiplier;
+		AvailableGrip = GetForceIntoSurface() * GetSurfaceFriction() * Setup().FrictionMultiplier;
 
 		float FinalLongitudinalForce = 0.f;
 		float FinalLateralForce = 0.f;
@@ -64,7 +68,7 @@ void SFWheelSimModule::Simulate(float DeltaTime, const Chaos::FAllInputs& Inputs
 		bool WheelLocked = false;
 
 		// are we actually touching the ground
-		if (ForceIntoSurface > SMALL_NUMBER)
+		if (GetForceIntoSurface() > SMALL_NUMBER)
 		{
 			// ABS limiting brake force to match force from the grip available
 			if (Setup().ABSEnabled && Braking && FMath::Abs(AppliedLinearBrakeForce) > AvailableGrip)
